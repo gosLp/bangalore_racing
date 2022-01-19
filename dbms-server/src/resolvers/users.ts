@@ -3,6 +3,8 @@ import { Resolver, Query, Ctx, Arg, Mutation, Int, InputType, Field, ObjectType 
 import { MyContext } from "src/types";
 import argon2 from 'argon2';
 import console from 'console';
+import { COOKIE_NAME } from '../constant';
+import { getConnection, getRepository } from 'typeorm';
 declare module "express-session" {
     interface SessionData {
       userId?: number;
@@ -42,7 +44,7 @@ export class LoginResolvers {
 
     @Query(() => login, {nullable: true})
     async me(
-        @Ctx(){ req, em }:MyContext
+        @Ctx(){ req }:MyContext
     ){
         // not logged in
         console.log(req.session.userId);
@@ -50,34 +52,32 @@ export class LoginResolvers {
             return null
         }
 
-        const user = await em.findOne(login, {id: req.session.userId});
+        // const user = await  .findOne(login, {id: req.session.userId});
+        const user = await login.findOne({where:{id:req.session.userId}});//login.findOne(req.session.userId);
         return user;
     }
 
 
     @Query(()=> [login])
-    users(
-        @Ctx() {em}: MyContext
-    ):Promise<login[]>{
+    users():Promise<login[]>{
         
-        return em.find(login, {});
+        return login.find()
     }
 
     @Mutation(() => login, {nullable: true})
     async updateUser(
         @Arg('id', () => Int) id: number,
         @Arg('uname', () => String) uname: string,
-        @Arg('password', () => String) password: string,
-        @Ctx() {em}: MyContext
+        @Arg('password', () => String) password: string
     ):Promise<login | null>{
-        const update = await em.findOne(login, {id});
+        const update = await login.findOne(id);
         if(!update){
             return null
         }
         if(typeof uname !== 'undefined' && typeof password !== 'undefined'){
             update.uname = uname;
             update.password = password;
-            await em.persistAndFlush(update);
+            await login.update({uname: uname},{password: password})//em.persistAndFlush(update);
 
         }
         
@@ -88,11 +88,11 @@ export class LoginResolvers {
 
     @Mutation(() => Boolean)
     async deleteUser(
-        @Arg('uname', () => String) uname: string,
-        @Ctx() {em}: MyContext
+        @Arg('uname', () => String) uname: string
     ):Promise<Boolean>{
         try{
-            await em.nativeDelete(login, {uname});
+            // await em.nativeDelete(login, {uname});
+            await login.delete(uname);
         }catch{
             console.log("user does not exist");
             return false;
@@ -106,7 +106,7 @@ export class LoginResolvers {
     @Mutation(() => UserResponse)
     async register(
         @Arg('options', () => UsernamePasswordInput) options : UsernamePasswordInput,
-        @Ctx() {em, req}: MyContext
+        @Ctx() { req}: MyContext
     ):Promise<UserResponse>{
         if(options.username.length <= 2){
             return{
@@ -129,14 +129,23 @@ export class LoginResolvers {
             }
         }
         const hashedPassword = await argon2.hash(options.password);
-        const user = em.create(login,{
-            uname: options.username,
-            password: hashedPassword
-        });
+        // const user = em.create(login,{
+        //     uname: options.username,
+        //     password: hashedPassword
+        // });
+        let user;
         try{
-            await em.persistAndFlush(user);
+            user = await login.create({
+                uname: options.username,
+                password: hashedPassword
+            }).save()
+             console.log('result: ', user);
+            
+             console.log("id is :", user.id)
+
         }catch(err){
             // duplicate username error code
+            
             if(err.code ==="ER_DUP_ENTRY"){
                 
                 return {
@@ -151,7 +160,7 @@ export class LoginResolvers {
         }
         //store the cookie in the cookie table
         //will keep the user logged in
-        req.session.userId = user.id;
+        req.session.userId = user?.id;
 
         return {
             user //from UserResponse Object type
@@ -162,9 +171,9 @@ export class LoginResolvers {
     @Mutation(() => UserResponse)
     async login(
         @Arg('options', () => UsernamePasswordInput) options : UsernamePasswordInput,
-        @Ctx() {em, req}: MyContext
+        @Ctx() { req}: MyContext
     ): Promise<UserResponse>{
-        const user = await em.findOne(login, {uname: options.username});
+        const user = await login.findOne({where:{uname:options.username}});
         if(!user){
             return{
                 errors: [
@@ -193,6 +202,23 @@ export class LoginResolvers {
         return {
             user
         };
+    }
+
+    @Mutation(() => Boolean)
+    logout(
+        @Ctx(){ req, res}: MyContext
+    ){
+        res.clearCookie
+        return new Promise(resolve =>req.session.destroy(err =>{
+            res.clearCookie(COOKIE_NAME)
+            if(err){
+                console.log(err);
+                resolve(false)
+                return
+            }
+
+            resolve(true);
+        }))
     }
 
 }

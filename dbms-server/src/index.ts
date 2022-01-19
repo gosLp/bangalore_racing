@@ -1,16 +1,30 @@
-import { MikroORM } from "@mikro-orm/core";
-import { __prod__ } from "./constant";
-import mikroOrmConfig from "./mikro-orm.config";
+// import { MikroORM } from "@mikro-orm/core";
+import "reflect-metadata";
+import { COOKIE_NAME, __prod__ } from "./constant";
+// import mikroOrmConfig from "./mikro-orm.config";
 import express from "express";
 import {ApolloServer} from 'apollo-server-express';
 import {buildSchema} from 'type-graphql';
 import { HelloResolvers } from "./resolvers/hello";
 import { LoginResolvers } from "./resolvers/users";
-import "reflect-metadata";
+import { ContractResolvers } from "./resolvers/contract";
+
 //import mysql from "mysql2";
 import session from "express-session";
 import { MyContext } from "./types";
 import cors from 'cors';
+import {createConnection} from "typeorm";
+import { login } from "./entities/login";
+import { Driver } from "./entities/driver";
+import { Car } from "./entities/car";
+import { Contract } from "./entities/contract";
+import { Engineer } from "./entities/engineer";
+import { Mechanic } from "./entities/mechanic";
+import { Management } from "./entities/management";
+import { Revenue } from "./entities/revenue";
+import { DriverResolvers } from "./resolvers/drivers";
+import path from 'path';
+
 //import connectMySql from "express-mysql-session";
 
 
@@ -20,8 +34,28 @@ import cors from 'cors';
 
 
 const main = async () => {
-    const orm = MikroORM.init(mikroOrmConfig);
-    (await orm).getMigrator().up();
+
+    const conn = await createConnection({
+        type:'mysql',
+        database: 'B_racing',
+        username: "root",
+        password: "prat1234",
+        port: 3306,
+        host: 'localhost',
+        logging: true,
+        synchronize: false, //true
+        // migrations: [path.join(__dirname, './migrations/*')],
+        entities:[login, Driver, Car, Contract, Engineer, Mechanic, Management, Revenue]
+
+        
+
+    });
+
+    await conn.runMigrations();
+
+    
+    // const orm = MikroORM.init(mikroOrmConfig);
+    // (await orm).getMigrator().up();
     console.log("This might be the start of the project"); 
     const app = express();
 
@@ -47,7 +81,7 @@ const main = async () => {
     
     // const mySqlClient = mysql.createConnection(mySqlOptions)
     app.use(session({
-        name: "qid",
+        name: COOKIE_NAME,
         secret: 'dbmsminiproject',
         cookie: {
             maxAge: 365 * 24 * 60 * 60 * 1000,
@@ -63,11 +97,13 @@ const main = async () => {
 
     const apolloserver = new ApolloServer({
         schema: await buildSchema({
-            resolvers:[HelloResolvers, LoginResolvers],
+            resolvers:[HelloResolvers, LoginResolvers, ContractResolvers, DriverResolvers],
             validate: false
         }),
         
-        context: async ({req, res}): Promise<MyContext> => ({em: (await orm).em, req, res}),
+        
+        context: async ({req, res}): Promise<MyContext> => (/*{em: (await orm).em,*/{ req, res}),
+        
     });
     await apolloserver.start()
     console.log(apolloserver);

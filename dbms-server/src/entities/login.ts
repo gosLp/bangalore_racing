@@ -1,21 +1,21 @@
-import {  Entity, PrimaryKey,  Property } from "@mikro-orm/core";
+import { Entity,Column, PrimaryGeneratedColumn, BaseEntity  } from "typeorm";
 import { Field, Int, ObjectType } from "type-graphql";
 
 
 @ObjectType()
 @Entity()
-export class login  {
+export class login extends BaseEntity {
 
     @Field(() => Int)
-    @PrimaryKey()
+    @PrimaryGeneratedColumn()
     id!: number;
     
     @Field()
-    @Property({type: "text", unique: true})
+    @Column({ unique: true})
     uname: string;
 
     
-    @Property({type: "text"})
+    @Column({type: "text"})
     password : string;
   
 }
