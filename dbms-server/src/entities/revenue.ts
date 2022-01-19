@@ -1,5 +1,5 @@
 // import {  Entity, ManyToOne, OneToOne, PrimaryKey,  Property } from "@mikro-orm/core";
-import { Field, Int, ObjectType, } from "type-graphql";
+import { Field, Int, ObjectType, registerEnumType, } from "type-graphql";
 import { Entity, Column, PrimaryGeneratedColumn, BaseEntity, ManyToOne } from "typeorm";
 import { Car } from "./car";
 
@@ -11,6 +11,11 @@ export enum RType{
 
 }
 
+registerEnumType(RType,{
+    name: "RType",
+    description: "this is the revenue type for the sponsor"
+})
+
 @ObjectType()
 @Entity()
 export class Revenue extends BaseEntity {
@@ -19,8 +24,8 @@ export class Revenue extends BaseEntity {
     @PrimaryGeneratedColumn()
     r_id!: number;
 
-    @Field(() => Date)
-    @Column({type: "date"})
+    @Field(() => String)
+    @Column(({type: "date"}))
     duration: string;
 
     @Field(() => Int)

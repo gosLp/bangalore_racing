@@ -4,9 +4,7 @@ export class FakeDrivers1642534483531 implements MigrationInterface {
 
     public async up(queryRunner: QueryRunner): Promise<void> {
         await  queryRunner.query(
-           `insert into driver (pos, status, Dname, Dage) values (6, false, 'Kizzie', 21);
-           insert into driver (pos, status, Dname, Dage) values (7, false, 'Carlos', 26);
-           insert into driver (pos, status, Dname, Dage) values (20, true, 'Shelagh', 33);
+           `insert into driver (pos, status, Dname, Dage) values (6, false, 'Kizzie', 21);insert into driver (pos, status, Dname, Dage) values (7, false, 'Carlos', 26);insert into driver (pos, status, Dname, Dage) values (20, true, 'Shelagh', 33);
            insert into driver (pos, status, Dname, Dage) values (8, false, 'Barnie', 35);
            insert into driver (pos, status, Dname, Dage) values (12, false, 'Thomasina', 30);
            insert into driver (pos, status, Dname, Dage) values (8, false, 'Tonnie', 29);

@@ -24,6 +24,8 @@ import { Management } from "./entities/management";
 import { Revenue } from "./entities/revenue";
 import { DriverResolvers } from "./resolvers/drivers";
 import path from 'path';
+import { CarResolvers } from "./resolvers/car";
+import { SponsorResolvers } from "./resolvers/sponsor";
 
 //import connectMySql from "express-mysql-session";
 
@@ -37,14 +39,15 @@ const main = async () => {
 
     const conn = await createConnection({
         type:'mysql',
-        database: 'B_racing',
+        database: 'B_racing2',
         username: "root",
         password: "prat1234",
         port: 3306,
         host: 'localhost',
         logging: true,
         synchronize: false, //true
-        // migrations: [path.join(__dirname, './migrations/*')],
+        migrations: [path.join(__dirname, './migrations/*')],
+        migrationsRun: true,
         entities:[login, Driver, Car, Contract, Engineer, Mechanic, Management, Revenue]
 
         
@@ -97,7 +100,7 @@ const main = async () => {
 
     const apolloserver = new ApolloServer({
         schema: await buildSchema({
-            resolvers:[HelloResolvers, LoginResolvers, ContractResolvers, DriverResolvers],
+            resolvers:[HelloResolvers, LoginResolvers, ContractResolvers, DriverResolvers, CarResolvers, SponsorResolvers],
             validate: false
         }),
         

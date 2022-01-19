@@ -1,0 +1,13 @@
+{
+    "type": "mysql",
+    "host": "localhost",
+    "port": 3306,
+    "username": "root",
+    "password": "prat1234",
+    "database": "b_racing",
+    "entities": ["dist/entities/*.js"],
+    "migrations": ["dsit/migrations/*.js"],
+    "cli": {
+        "migrationsDir": "migration"
+    }
+}

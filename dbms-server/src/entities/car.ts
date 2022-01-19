@@ -1,5 +1,5 @@
 // import {  Entity, ManyToOne, OneToOne, PrimaryKey,  Property } from "@mikro-orm/core";
-import { Field, Int, ObjectType, } from "type-graphql";
+import { Field, Int, ObjectType, registerEnumType, } from "type-graphql";
 import { Entity, Column, PrimaryGeneratedColumn, BaseEntity, ManyToOne, OneToMany } from "typeorm";
 import { Driver } from "./driver";
 import { Mechanic } from "./mechanic";
@@ -13,6 +13,11 @@ export enum EngineParts {
     NEW = "new"
 }
 
+registerEnumType(EngineParts, {
+    name: "EngineParts",
+    description: "Age of the parts in the car"
+})
+
 @ObjectType()
 @Entity({name: 'car', schema: 'public'})
 export class Car extends BaseEntity {
@@ -23,7 +28,7 @@ export class Car extends BaseEntity {
 
     @Field(() => String)
     @Column({unique: true})
-    engine: string;
+    engineSupplier: string;
 
     @Field()
     @Column({
@@ -31,7 +36,7 @@ export class Car extends BaseEntity {
         enum: EngineParts,
         default: EngineParts.NEW
     })
-    parts: EngineParts;
+    front: EngineParts;
     
     @Field()
     @Column({type: "boolean"})
@@ -41,6 +46,7 @@ export class Car extends BaseEntity {
     @Column()
     driverId: number;
 
+    @Field()
     @ManyToOne(() =>Driver, driver => driver.car)
     driver: Driver
 
@@ -49,5 +55,17 @@ export class Car extends BaseEntity {
 
     @OneToMany(() => Revenue, revenue => revenue.car)
     revenue: Revenue[];
+
+    @Field()
+    @Column({type:"enum", enum: EngineParts, default: EngineParts.NEW})
+    E_condition: EngineParts
+
+    @Field()
+    @Column({type:"enum", enum: EngineParts, default: EngineParts.NEW})
+    rear: EngineParts
+
+    @Field()
+    @Column({type:"enum", enum: EngineParts, default: EngineParts.NEW})
+    chasis: EngineParts
     
 }

@@ -68,6 +68,19 @@ export class DriverResolvers {
     //     return user;
     // }
 
+    @Query(() =>[Driver])
+    async myDrivers(
+
+    ): Promise<Driver[]>{
+            const qb = await getConnection().getRepository(Driver)
+                                            .createQueryBuilder("d")
+                                            .where("status = 1")
+                                            .orderBy('pos')
+                                            .getMany();
+            return qb;
+    }
+
+
     @Mutation(() => Driver)
     async newDriver(
         // @Arg('limit') limit: number,
@@ -104,162 +117,5 @@ export class DriverResolvers {
     }
 
     
-
-    // @Mutation(() => login, {nullable: true})
-    // async updateUser(
-    //     @Arg('id', () => Int) id: number,
-    //     @Arg('uname', () => String) uname: string,
-    //     @Arg('password', () => String) password: string
-    // ):Promise<login | null>{
-    //     const update = await login.findOne(id);
-    //     if(!update){
-    //         return null
-    //     }
-    //     if(typeof uname !== 'undefined' && typeof password !== 'undefined'){
-    //         update.uname = uname;
-    //         update.password = password;
-    //         await login.update({uname: uname},{password: password})//em.persistAndFlush(update);
-
-    //     }
-        
-    
-    //     return update;
-    // }
-
-
-    // @Mutation(() => Boolean)
-    // async deleteUser(
-    //     @Arg('uname', () => String) uname: string
-    // ):Promise<Boolean>{
-    //     try{
-    //         // await em.nativeDelete(login, {uname});
-    //         await login.delete(uname);
-    //     }catch{
-    //         console.log("user does not exist");
-    //         return false;
-    //     }
-        
-    
-    //     return true;
-    // }
-
-    // //Actual signup mmodule with hashed passwords
-    // @Mutation(() => UserResponse)
-    // async register(
-    //     @Arg('options', () => UsernamePasswordInput) options : UsernamePasswordInput,
-    //     @Ctx() { req}: MyContext
-    // ):Promise<UserResponse>{
-    //     if(options.username.length <= 2){
-    //         return{
-    //             errors:[
-    //                 {
-    //                     field: "username",
-    //                     message: "Length should be greater than 2 characters"
-    //                 }
-    //             ]
-    //         }
-    //     }
-    //     if(options.password.length <= 3){
-    //         return{
-    //             errors:[
-    //                 {
-    //                     field: "password",
-    //                     message: "Length should be greater than 3 characters"
-    //                 }
-    //             ]
-    //         }
-    //     }
-    //     const hashedPassword = await argon2.hash(options.password);
-    //     // const user = em.create(login,{
-    //     //     uname: options.username,
-    //     //     password: hashedPassword
-    //     // });
-    //     let user;
-    //     try{
-    //         user = await login.create({
-    //             uname: options.username,
-    //             password: hashedPassword
-    //         }).save()
-    //          console.log('result: ', user);
-            
-    //          console.log("id is :", user.id)
-
-    //     }catch(err){
-    //         // duplicate username error code
-            
-    //         if(err.code ==="ER_DUP_ENTRY"){
-                
-    //             return {
-    //                 errors: [
-    //                     {
-    //                         field:"username",
-    //                         message:"Username already taken"
-    //                     }
-    //                 ]
-    //             }
-    //         }  
-    //     }
-    //     //store the cookie in the cookie table
-    //     //will keep the user logged in
-    //     req.session.userId = user?.id;
-
-    //     return {
-    //         user //from UserResponse Object type
-    //     };
-    // }
-
-    // // Login module for users with hash comparsion
-    // @Mutation(() => UserResponse)
-    // async login(
-    //     @Arg('options', () => UsernamePasswordInput) options : UsernamePasswordInput,
-    //     @Ctx() { req}: MyContext
-    // ): Promise<UserResponse>{
-    //     const user = await login.findOne({where:{uname:options.username}});
-    //     if(!user){
-    //         return{
-    //             errors: [
-    //                 {
-    //                 field: 'username',
-    //                 message:'Username does not exist',
-    //             },
-    //         ]
-    //         }
-    //     }
-    //     const valid = await argon2.verify(user.password, options.password);
-    //     if(!valid){
-    //         return{
-    //             errors: [
-    //                 {
-    //                     field: "password",
-    //                     message: "incorect password"
-    //                 }
-    //             ]
-    //         }
-    //     }
-        
-    //     req.session.userId = user.id;
-    //     console.log(req.session.userId);
-         
-    //     return {
-    //         user
-    //     };
-    // }
-
-    // @Mutation(() => Boolean)
-    // logout(
-    //     @Ctx(){ req, res}: MyContext
-    // ){
-    //     res.clearCookie
-    //     return new Promise(resolve =>req.session.destroy(err =>{
-    //         res.clearCookie(COOKIE_NAME)
-    //         if(err){
-    //             console.log(err);
-    //             resolve(false)
-    //             return
-    //         }
-
-    //         resolve(true);
-    //     }))
-    // }
 
 }

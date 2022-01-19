@@ -19,7 +19,7 @@ export class Driver extends BaseEntity {
     pos: number;
 
     @Field()
-    @Column({type: "text", default: "inactive driver"})
+    @Column({type: "text"})
     status: string;
     
     @Field()
