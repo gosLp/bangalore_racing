@@ -9,5 +9,8 @@
     "migrations": ["dsit/migrations/*.js"],
     "cli": {
         "migrationsDir": "migration"
-    }
+    },
+    "subcribers": [
+        "src/subcriber/**/*.ts"
+    ]
 }

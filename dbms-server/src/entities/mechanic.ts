@@ -37,6 +37,6 @@ export class Mechanic extends BaseEntity {
 
     @ManyToOne(() => Car, car => car.mechanic)
     car: Car
-
+    
 
 }

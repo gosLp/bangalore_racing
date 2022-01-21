@@ -7,6 +7,9 @@ import { COOKIE_NAME } from '../constant';
 import { getConnection, getRepository } from 'typeorm';
 import {Driver} from '../entities/driver'
 import {FError} from './contract'
+import { Car } from '../entities/car';
+import { Contract,  } from '../entities/contract';
+import { Engineer } from '../entities/engineer';
 declare module "express-session" {
     interface SessionData {
       userId?: number;
@@ -33,6 +36,23 @@ class UsernamePasswordInput{
 // }
 
 @ObjectType()
+class DriverDetailsResponse{
+    @Field(() => [FError], {nullable:true})
+    errors?: FError[]
+
+    @Field(() => Contract, {nullable:true})
+    contract?: Contract
+
+    @Field(() => Engineer, {nullable:true})
+    engineer?: Engineer
+
+    @Field(() => Driver, {nullable:true})
+    driver?: Driver
+
+    
+}
+
+@ObjectType()
 class UserResponse{
     @Field(() => [FError], {nullable: true} )
     errors?: FError[]  
@@ -53,20 +73,7 @@ class DriverInput{
 @Resolver()
 export class DriverResolvers {
 
-    // @Query(() => login, {nullable: true})
-    // async me(
-    //     @Ctx(){ req }:MyContext
-    // ){
-    //     // not logged in
-    //     console.log(req.session.userId);
-    //     if(!req.session.userId){
-    //         return null
-    //     }
-
-    //     // const user = await  .findOne(login, {id: req.session.userId});
-    //     const user = await login.findOne({where:{id:req.session.userId}});//login.findOne(req.session.userId);
-    //     return user;
-    // }
+   
 
     @Query(() =>[Driver])
     async myDrivers(
@@ -80,6 +87,7 @@ export class DriverResolvers {
             return qb;
     }
 
+    
 
     @Mutation(() => Driver)
     async newDriver(
@@ -116,6 +124,42 @@ export class DriverResolvers {
         
     }
 
-    
+    @Query(() => [Car])
+    async myCar(
+        @Arg('id', () =>Int) id: number
+    ):Promise<Car[]>{
+        const myCar = await Car.find({where:{driverId: id}});
+        return myCar
+    }
 
+
+    @Query(() => DriverDetailsResponse)
+    async myDetails(
+        @Arg('id', () =>Int) id: number
+    ):Promise<DriverDetailsResponse>{
+        const myDriver = await getConnection().getRepository(Driver)
+        .find({where:{driver_id: id},relations: ["contract", "engineer"]})
+        console.log(myDriver[0]);
+        if(myDriver[0].contract || myDriver[0].engineer){
+            return{
+                contract: myDriver[0].contract,
+                engineer: myDriver[0].engineer,
+                driver: myDriver[0]
+            }
+        }
+        
+        else{
+            return{
+                errors:[{
+                    field:"Engineer",
+                    message: "Driver doesn't have a Engineer"
+                }]
+            }
+        }
+    }
+
+    // @Query(() => Engineer)
+    // async myEngineer(
+    //     @Arg('id')
+    // )
 }

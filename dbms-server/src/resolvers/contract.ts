@@ -118,8 +118,8 @@ export class ContractResolvers {
 
                 switch (options.type) {
                     case ContractType.DRIVER: // logic to check if previous contract is more valuable isnt added
-                    const driver = await Driver.find({where: {driver_id:typeId}});
-                    if(driver.length === 0){
+                    const driver = await Driver.findOne({where: {driver_id:typeId}});
+                    if(!driver){
                         console.log(typeId);
                             return{
                                 errors: [{
@@ -141,11 +141,9 @@ export class ContractResolvers {
     
                         break;
                     case ContractType.ENGINEER:
-                        const engineer = await getConnection().createQueryBuilder().update(Engineer)
-                                                .set({contract: offer, status: true}).where("engineer_id = :id", {id:typeId})
-                                                .execute();
-                        if(engineer.affected === 0){
-                            
+                        const engineer = await Engineer.findOne({where:{engineer_id: typeId}})
+                        if(!engineer){
+                            console.log(typeId)
                                 return{
                                     errors: [{
                                         field: `Input Personel ID is incorrect`,
@@ -157,6 +155,10 @@ export class ContractResolvers {
                         }
 
                         await offerFunc();
+                        await getConnection().createQueryBuilder().update(Engineer)
+                                            .set({contract:offer, status: true}).where("engineer_id = :id", {id:typeId})
+                                            .execute();
+                        
                         break;
                     case ContractType.MANGAEMENT:
                         const management = await getConnection().createQueryBuilder().update(Management)
