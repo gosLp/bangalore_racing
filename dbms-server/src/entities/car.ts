@@ -1,6 +1,6 @@
 // import {  Entity, ManyToOne, OneToOne, PrimaryKey,  Property } from "@mikro-orm/core";
 import { Field, Int, ObjectType, registerEnumType, } from "type-graphql";
-import { Entity, Column, PrimaryGeneratedColumn, BaseEntity, ManyToOne, OneToMany } from "typeorm";
+import { Entity, Column, PrimaryGeneratedColumn, BaseEntity, ManyToOne, OneToMany, AfterUpdate } from "typeorm";
 import { Driver } from "./driver";
 import { Mechanic } from "./mechanic";
 import { Revenue } from "./revenue";
@@ -68,4 +68,15 @@ export class Car extends BaseEntity {
     @Column({type:"enum", enum: EngineParts, default: EngineParts.NEW})
     chasis: EngineParts
     
+    
+
+
+    @AfterUpdate()
+    resetCondition(){
+        this.E_condition = EngineParts.NEW;
+        this.chasis = EngineParts.NEW;
+        this.front = EngineParts.NEW
+        this.rear= EngineParts.NEW;
+    }
+
 }

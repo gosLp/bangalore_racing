@@ -4,13 +4,15 @@
     "port": 3306,
     "username": "root",
     "password": "prat1234",
-    "database": "b_racing",
+    "database": "b_racing2",
     "entities": ["dist/entities/*.js"],
     "migrations": ["dsit/migrations/*.js"],
+    "synchronize": true,
     "cli": {
-        "migrationsDir": "migration"
+        "entities":[],
+        "migrationsDir": "src/migrations"
     },
     "subcribers": [
-        "src/subcriber/**/*.ts"
+        "src/subcriber/*.ts"
     ]
 }

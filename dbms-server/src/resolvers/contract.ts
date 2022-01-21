@@ -161,11 +161,9 @@ export class ContractResolvers {
                         
                         break;
                     case ContractType.MANGAEMENT:
-                        const management = await getConnection().createQueryBuilder().update(Management)
-                                                .set({contract: offer,status:true}).where("m_id = :id", {id:typeId})
-                                                .execute();
-                        if(management.affected === 0){
-                            
+                        const management = await Management.findOne({where:{m_id: typeId}})
+                        if(!management){
+                            console.log(typeId)
                                 return{
                                     errors: [{
                                         field: `Input Personel ID is incorrect`,
@@ -175,15 +173,16 @@ export class ContractResolvers {
                                 
                             
                         }
+                        
 
-                        await offerFunc();                       
+                        await offerFunc(); 
+                        await getConnection().createQueryBuilder().update(Management)
+                                            .set({contract:offer, status: true}).where("m_id = :id",{id:typeId});                      
                         break;
                     case ContractType.MECHANIC:
-                        const mechanic = await getConnection().createQueryBuilder().update(Mechanic)
-                                                .set({contract: offer}).where("mech_id = :id", {id:typeId})
-                                                .execute();
-                        if(mechanic.affected === 0){
-                            
+                        const mechanic =  await Mechanic.findOne({where:{mech_id: typeId}})
+                        if(!mechanic){
+                            console.log(typeId)
                                 return{
                                     errors: [{
                                         field: `Input Personel ID is incorrect`,
@@ -195,6 +194,8 @@ export class ContractResolvers {
                         }
 
                         await offerFunc();
+                        await getConnection().createQueryBuilder().update(Mechanic)
+                                            .set({contract:offer, status: true}).where("mech_id = :id",{id:typeId});
                                 
                         break;
                     default: return {

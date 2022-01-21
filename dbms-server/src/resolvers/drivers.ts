@@ -158,8 +158,25 @@ export class DriverResolvers {
         }
     }
 
-    // @Query(() => Engineer)
-    // async myEngineer(
-    //     @Arg('id')
-    // )
+    @Mutation(() => Driver)
+    async newDriverEngineer(
+        @Arg('driverId', ()=>Int) driverId: number,
+        @Arg('eId', ()=>Int) eId: number
+    ):Promise<Driver>{
+        const driver =  await getConnection().getRepository(Driver)
+        .findOne({where:{driver_id: driverId},relations: ["contract", "engineer"]})
+        if(driver){
+            const engineer = await Engineer.findOne({where:{engineer_id: eId}});
+
+            await getConnection().createQueryBuilder().update(Driver)
+                                            .set({engineer: engineer}).where("driver_id = :id", {id:driverId})
+                                            .execute().then(()=>{
+                                                return driver
+                                            }).catch(()=>{
+                                                return driver
+                                            })
+
+        }
+        return driver!
+    }
 }

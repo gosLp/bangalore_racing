@@ -1,5 +1,5 @@
 // import {  Entity, ManyToOne, OneToOne, PrimaryKey,  Property } from "@mikro-orm/core";
-import { Field, Int, ObjectType, } from "type-graphql";
+import { Field, Int, ObjectType, registerEnumType, } from "type-graphql";
 import { Entity, Column, PrimaryGeneratedColumn, BaseEntity, JoinColumn, OneToOne, ManyToOne } from "typeorm";
 import { Car } from "./car";
 import { Contract } from "./contract";
@@ -11,6 +11,12 @@ export enum Parts{
     CREW = "crew",
     
 }
+
+registerEnumType(Parts,{
+    name: 'Parts',
+    description: "Part on which the mechanic works on"
+})
+
 @ObjectType()
 @Entity()
 export class Mechanic extends BaseEntity {
@@ -30,6 +36,10 @@ export class Mechanic extends BaseEntity {
     @Field()
     @Column({type: "text"})
     Mname: string;
+
+    @Field()
+    @Column({type:"boolean", default:false})
+    status:boolean
 
     @OneToOne(() => Contract)
     @JoinColumn()

@@ -27,6 +27,7 @@ import path from 'path';
 import { CarResolvers } from "./resolvers/car";
 import { SponsorResolvers } from "./resolvers/sponsor";
 import { EngineerResolvers } from "./resolvers/engineer";
+import { MechanicResolvers } from "./resolvers/mechanic";
 
 //import connectMySql from "express-mysql-session";
 
@@ -55,6 +56,8 @@ const main = async () => {
         
 
     });
+
+    
 
     await conn.runMigrations();
 
@@ -102,7 +105,7 @@ const main = async () => {
 
     const apolloserver = new ApolloServer({
         schema: await buildSchema({
-            resolvers:[HelloResolvers, LoginResolvers, ContractResolvers, DriverResolvers, CarResolvers, SponsorResolvers, EngineerResolvers],
+            resolvers:[HelloResolvers, LoginResolvers, ContractResolvers, DriverResolvers, CarResolvers, SponsorResolvers, EngineerResolvers, MechanicResolvers],
             validate: false
         }),
         
