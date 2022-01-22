@@ -115,7 +115,7 @@ const main = async () => {
     });
     await apolloserver.start()
     console.log(apolloserver);
-    apolloserver.applyMiddleware({app, cors:false}); // set true to use apollo studio
+    apolloserver.applyMiddleware({app, cors: false }); // set true to use apollo studio
 
     app.listen(4000, ()=>{
         console.log("server started on localhost:4000")

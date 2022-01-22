@@ -4,7 +4,7 @@ import { MyContext } from "src/types";
 import argon2 from 'argon2';
 import console from 'console';
 import { COOKIE_NAME } from '../constant';
-import { getConnection, getRepository } from 'typeorm';
+import { Connection, ConnectionManager, getConnection, getManager, getRepository } from 'typeorm';
 import {Driver} from '../entities/driver'
 import {FError} from './contract'
 import { Car } from '../entities/car';
@@ -164,17 +164,31 @@ export class DriverResolvers {
         @Arg('eId', ()=>Int) eId: number
     ):Promise<Driver>{
         const driver =  await getConnection().getRepository(Driver)
-        .findOne({where:{driver_id: driverId},relations: ["contract", "engineer"]})
+                                .findOne({where:{driver_id: driverId},relations: ["contract", "engineer"]})
         if(driver){
             const engineer = await Engineer.findOne({where:{engineer_id: eId}});
-
-            await getConnection().createQueryBuilder().update(Driver)
-                                            .set({engineer: engineer}).where("driver_id = :id", {id:driverId})
-                                            .execute().then(()=>{
-                                                return driver
-                                            }).catch(()=>{
-                                                return driver
-                                            })
+            console.log(engineer)
+            // await getConnection().createQueryBuilder().update(Driver)
+            //                                 .set({engineer: engineer}).where("driver_id = :id", {id:driverId})
+            //                                 .execute().then(()=>{
+            //                                     return driver
+            //                                 }).catch((err)=>{
+            //                                     console.log(err)
+            //                                     console.log("query failed");
+            //                                 })
+            if (engineer) {
+                driver.engineer= engineer;
+                await driver.save();
+                
+                console.log(driver.engineer)
+                return driver
+                    
+                
+            }
+            else{
+                console.log("query failed");
+            }
+            
 
         }
         return driver!
