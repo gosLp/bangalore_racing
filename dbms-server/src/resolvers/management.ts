@@ -3,7 +3,7 @@ import { Resolver, Query, Arg, Int, ObjectType, Field, Mutation, InputType, } fr
 import { FError } from "./contract";
 import { Contract } from "src/entities/contract";
 import { Car } from "src/entities/car";
-import { Management } from "src/entities/management";
+import { Management } from "../entities/management";
 import { getConnection } from "typeorm";
 
 
@@ -19,7 +19,7 @@ class MechanicResponse{
 
 
 @Resolver()
-export class MechanicResolvers{
+export class ManagementResolvers{
 
     // @Query(() => MechanicResponse)
     // async MechInfo(

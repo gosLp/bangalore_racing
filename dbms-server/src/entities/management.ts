@@ -1,5 +1,5 @@
 // import {  Entity, ManyToOne, OneToOne, PrimaryKey,  Property } from "@mikro-orm/core";
-import { Field, Int, ObjectType, } from "type-graphql";
+import { Field, Int, ObjectType, registerEnumType, } from "type-graphql";
 import { Entity, Column, PrimaryGeneratedColumn, BaseEntity, OneToOne, JoinColumn } from "typeorm";
 import { Contract } from "./contract";
 
@@ -9,6 +9,10 @@ export enum MType{
     DIRECTOR = "director"
 }
 
+registerEnumType(MType,{
+    name: "MType",
+    description: "Type of management"
+})
 @ObjectType()
 @Entity()
 export class Management extends BaseEntity {
