@@ -61,7 +61,7 @@ class ConditonType{
 }
 
 @ObjectType()
-class ConditionResponse{
+class carConditionResponse{
     @Field(() => [FError], {nullable: true} )
     errors?: FError[]
     
@@ -71,15 +71,17 @@ class ConditionResponse{
 @Resolver()
 export class CarResolvers {
 
-   @Query(() => ConditionResponse)
+   @Query(() => carConditionResponse)
    async carCondition(
        @Arg('carId', () => Int) carId: number,
-       @Arg('part', () => PartType ) part: PartType
-   ):Promise<ConditionResponse> {
+       @Arg('part', () => PartType ) part: PartType,
+       @Ctx(){req}: MyContext
+   ):Promise<carConditionResponse> {
         
         const car = await Car.findOne({where: {car_id: carId}});
         let condition
         if(car){
+            req.body.car = car
             switch (part) {
                 case PartType.ENGINE:
                      condition = car.E_condition
@@ -128,6 +130,8 @@ export class CarResolvers {
                 }
                     
             }
+
+            
 
         }
 
@@ -241,7 +245,7 @@ export class CarResolvers {
     }
     
 
-
+    
 
 
 }

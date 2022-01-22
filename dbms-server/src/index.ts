@@ -121,6 +121,9 @@ const main = async () => {
         console.log("server started on localhost:4000")
     });
 
+    express.static(path.join(__dirname,'./public'));
+    app.use('/static',express.static(path.join(__dirname,'./public')))
+
     app.get('/',(_,res) =>{
         res.send("HELLO!")
     })
