@@ -132,7 +132,7 @@ export class ContractResolvers {
                     }
                     await offerFunc();
                     await getConnection().createQueryBuilder().update(Driver)
-                                            .set({contract:offer, status: "active driver"}).where("driver_id = :id", {id:typeId})
+                                            .set({contract:offer, status:'1'}).where("driver_id = :id", {id:typeId})
                                             .execute();
                                             console.log(driver);
                         
@@ -177,10 +177,11 @@ export class ContractResolvers {
 
                         await offerFunc(); 
                         await getConnection().createQueryBuilder().update(Management)
-                                            .set({contract:offer, status: true}).where("m_id = :id",{id:typeId});                      
+                                            .set({contract:offer, status: true}).where("mech_id = :id",{id:typeId}).execute();                      
                         break;
                     case ContractType.MECHANIC:
                         const mechanic =  await Mechanic.findOne({where:{mech_id: typeId}})
+                        console.log(mechanic);
                         if(!mechanic){
                             console.log(typeId)
                                 return{
@@ -195,7 +196,7 @@ export class ContractResolvers {
 
                         await offerFunc();
                         await getConnection().createQueryBuilder().update(Mechanic)
-                                            .set({contract:offer, status: true}).where("mech_id = :id",{id:typeId});
+                                            .set({contract:offer, status: true}).where("mech_id = :id",{id:typeId}).execute();
                                 
                         break;
                     default: return {

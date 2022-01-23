@@ -238,7 +238,8 @@ export class CarResolvers {
                                    .where("carCarId = :id", {id: carId })
                                    .groupBy('mech_id')
                                    .getMany();
-        console.log(qb[0].part)
+        console.log(qb[0])
+        
              return {
                  mechanic: qb
              }

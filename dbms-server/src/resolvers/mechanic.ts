@@ -72,6 +72,47 @@ export class MechanicResolvers{
 
     }
 
+    @Mutation(() => MechanicResponse)
+    async assignMechanic(
+        @Arg('Mid', () => Int) Mid: number,
+        @Arg('carId', ()=> Int) carId: number
+    ):Promise<MechanicResponse>{
+            let mechanic;
+
+            
+            const car = await Car.findOne({where:{car_id: carId}})
+            if(car){
+
+                mechanic =  await Mechanic.findOne({relations:['car'], where:{mech_id: Mid}});
+                if(mechanic){
+                    mechanic.car = car
+                    await mechanic.save();
+                    return{
+                        mechanic: mechanic
+                    }
+                }
+                else{
+                    return{
+                        errors:[{
+                            field: "Mid",
+                            message: "Could not find or update Mechanic for car"
+                        }]
+                    }
+                }
+            }   
+            else{
+                return{
+                    errors: [{
+                        field:"carID",
+                        message: `could not find car with id : ${carId}`
+                    }]
+                }
+            }
+            
+
+    }
+
+
     @Query(() =>[Mechanic])
     async myMechanics(
 

@@ -25,7 +25,7 @@ export class Mechanic extends BaseEntity {
     @PrimaryGeneratedColumn()
     mech_id!: number;
 
-    @Field(() => Int)
+    @Field(() => Parts)
     @Column({
         type: "enum",
         enum: Parts,
