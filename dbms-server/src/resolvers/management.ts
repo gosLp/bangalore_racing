@@ -21,57 +21,23 @@ class MechanicResponse{
 @Resolver()
 export class ManagementResolvers{
 
-    // @Query(() => MechanicResponse)
-    // async MechInfo(
-    //     @Arg('mechId',()=>Int) mechId: number
-    // ): Promise<MechanicResponse>{
-    //     let mechanic;
-    //     mechanic = await Mechanic.findOne({relations:['car', 'contract'], where:{mech_id: mechId}});
-    //     console.log(mechanic);
-    //     if(mechanic){
-    //         return{
-                
-    //             mechanic: mechanic
-    //         }
-    //     }
-    //     else{
-    //         return{
-    //             errors:[{
-    //                 field:"Mech Id",
-    //                 message:`Could not find mechanic with ID: ${mechId}`
-    //             }]
-    //         }
-    //     }
+    @Query(() =>[Management])
+    async allManagement(
+        @Arg('limit', () => Int) limit: number,
+        @Arg('cursor', () => Int, {nullable: true}) cursor: number | null
+    ): Promise<Management[]>{
+        const realLimit = Math.min(50, limit);
+        const qb = getConnection().getRepository(Management)
+                                .createQueryBuilder("M")
+                                
+                                .orderBy('m_id')
+                                .take(realLimit)
 
-    // }
-    
-    // @Mutation(() => MechanicResponse)
-    // async NewMechanic(
-    //     @Arg('Mname', () => String) Mname: string,
-    //     @Arg('carId', ()=> Int) carId: number
-    // ):Promise<MechanicResponse>{
-    //         let mechanic;
-
-            
-    //         const car = await Car.findOne({where:{car_id: carId}})
-    //         if(car){
-
-    //             mechanic = await Mechanic.create({Mname: Mname,car: car});
-    //             return{
-    //                 mechanic: mechanic
-    //             }
-    //         }   
-    //         else{
-    //             return{
-    //                 errors: [{
-    //                     field:"carID",
-    //                     message: `could not find car with id : ${carId}`
-    //                 }]
-    //             }
-    //         }
-            
-
-    // }
+                if(cursor){
+                    qb.where(" m_id > :cursor", {cursor});
+                }
+                return qb.getMany()
+    }
 
     @Query(() =>[Management])
     async myManagement(

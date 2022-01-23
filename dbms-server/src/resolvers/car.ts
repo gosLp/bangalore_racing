@@ -246,7 +246,25 @@ export class CarResolvers {
     }
     
 
-    
+    @Query(() =>[Car])
+    async allCars(
+        @Arg('limit', () => Int) limit: number,
+        @Arg('cursor', () => Int, {nullable: true}) cursor: number | null
+    ): Promise<Car[]>{
+        const realLimit = Math.min(50, limit);
+        
+        
+        const qb = getConnection().getRepository(Car)
+                                .createQueryBuilder("c")
+                                
+                                .orderBy('car_id')
+                                .take(realLimit)
+
+                if(cursor){
+                    qb.where(" car_id > :cursor", {cursor});
+                }
+                return qb.getMany()
+    }
 
 
 }

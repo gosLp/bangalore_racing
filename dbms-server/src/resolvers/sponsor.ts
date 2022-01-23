@@ -117,7 +117,23 @@ export class SponsorResolvers {
         
     }
 
+    @Query(() =>[Revenue])
+    async allSponsors(
+        @Arg('limit', () => Int) limit: number,
+        @Arg('cursor', () => Int, {nullable: true}) cursor: number | null
+    ): Promise<Revenue[]>{
+        const realLimit = Math.min(50, limit);
+        const qb = getConnection().getRepository(Revenue)
+                                .createQueryBuilder("S")
+                                
+                                .orderBy('value')
+                                .take(realLimit)
 
+                if(cursor){
+                    qb.where(" r_id > :cursor", {cursor});
+                }
+                return qb.getMany()
+    }
 
 
 }
