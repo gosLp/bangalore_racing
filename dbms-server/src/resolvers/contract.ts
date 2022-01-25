@@ -132,7 +132,7 @@ export class ContractResolvers {
                     }
                     await offerFunc();
                     await getConnection().createQueryBuilder().update(Driver)
-                                            .set({contract:offer, status:'1'}).where("driver_id = :id", {id:typeId})
+                                            .set({contract:offer, status:true}).where("driver_id = :id", {id:typeId})
                                             .execute();
                                             console.log(driver);
                         

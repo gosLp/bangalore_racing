@@ -19,8 +19,8 @@ export class Driver extends BaseEntity {
     pos: number;
 
     @Field()
-    @Column({type: "text"})
-    status: string;
+    @Column({type: "boolean"})
+    status: boolean;
     
     @Field()
     @Column({type: "text"})

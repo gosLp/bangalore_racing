@@ -266,5 +266,13 @@ export class CarResolvers {
                 return qb.getMany()
     }
 
-
+    @Mutation(() => Car, {nullable: true})
+    async updateCarCondition(
+        @Arg('carId', ()=> Int) carId: number
+    ):Promise<Car | null>{
+         await Car.query(`call car_update_condition(${carId})`).catch((err)=>{ console.log(err)}).then((v)=> {
+            return v; 
+            console.log(v)});
+         return null
+    }
 }
